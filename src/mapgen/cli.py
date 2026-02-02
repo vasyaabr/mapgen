@@ -35,6 +35,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     render_parser.add_argument("--bbox", required=True, help="Bounding box as xmin,ymin,xmax,ymax")
     render_parser.add_argument("--size", required=True, help="Output size as width,height")
 
+    # Score command
+    score_parser = subparsers.add_parser("score", help="Compute similarity score between images")
+    score_parser.add_argument("--ref", required=True, help="Reference PNG image")
+    score_parser.add_argument("--cand", required=True, help="Candidate PNG image")
+    score_parser.add_argument("--metric", default="ssim", choices=["ssim"], help="Similarity metric")
+    score_parser.add_argument("--out", required=True, help="Output JSON score file")
+    score_parser.add_argument("--threshold", type=float, help="Similarity threshold")
+
     # Placeholder for future commands
     subparsers.add_parser("generate", help="Generate a map (placeholder)")
 
@@ -78,6 +86,49 @@ def main(argv: Sequence[str] | None = None) -> int:
         render_omap_to_png(args.input_file, args.output_file, (bbox[0], bbox[1], bbox[2], bbox[3]), (size[0], size[1]))
         print(f"Rendered {args.input_file} to {args.output_file}")
         return 0
+
+    elif args.command == "score":
+        import json
+        from mapgen.metrics.similarity import compute_ssim
+        
+        try:
+            if args.metric == "ssim":
+                score = compute_ssim(args.ref, args.cand)
+            else:
+                print(f"Error: Unknown metric {args.metric}")
+                return 1
+            
+            result = {
+                "metric": args.metric,
+                "score": score,
+                "reference": args.ref,
+                "candidate": args.cand,
+            }
+            
+            if args.threshold is not None:
+                result["threshold"] = args.threshold
+                result["pass"] = score >= args.threshold
+            
+            with open(args.out, "w") as f:
+                json.dump(result, f, indent=2)
+            
+            print(f"Score ({args.metric}): {score:.6f}")
+            
+            if args.threshold is not None:
+                if score >= args.threshold:
+                    print("Status: PASS")
+                    return 0
+                else:
+                    print(f"Status: FAIL (threshold: {args.threshold})")
+                    return 2
+            
+            return 0
+        except FileNotFoundError as e:
+            print(f"Error: File not found: {e}")
+            return 1
+        except Exception as e:
+            print(f"Error: {e}")
+            return 1
 
     return 0
 
