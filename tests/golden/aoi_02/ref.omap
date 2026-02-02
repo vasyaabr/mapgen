@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map xmlns="http://openorienteering.org/apps/mapper/xml/v2" version="9">
+<colors count="2">
+<color priority="0" name="Black" c="0" m="0" y="0" k="1" opacity="1">
+<rgb r="0" g="0" b="0"/>
+</color>
+<color priority="1" name="Red" c="0" m="1" y="1" k="0" opacity="1">
+<rgb r="1" g="0" b="0"/>
+</color>
+</colors>
+<symbols count="2">
+<symbol type="2" id="0" code="100" name="Line">
+<line_symbol color="0" line_width="300"/>
+</symbol>
+<symbol type="4" id="1" code="200" name="Area">
+<area_symbol inner_color="1"/>
+</symbol>
+</symbols>
+<object symbol="1" type="3">
+<coords count="5">20 20;80 20;80 80;20 80;20 20 2;</coords>
+</object>
+<object symbol="0" type="2">
+<coords count="2">100 0;0 100;</coords>
+</object>
+</map>

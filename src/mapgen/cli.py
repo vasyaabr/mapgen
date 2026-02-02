@@ -43,6 +43,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     score_parser.add_argument("--out", required=True, help="Output JSON score file")
     score_parser.add_argument("--threshold", type=float, help="Similarity threshold")
 
+    # Acceptance commands
+    acceptance_parser = subparsers.add_parser("acceptance", help="Run acceptance tests")
+    acceptance_subparsers = acceptance_parser.add_subparsers(dest="acceptance_command", help="Available acceptance commands")
+
+    run_parser = acceptance_subparsers.add_parser("run", help="Run acceptance for a single AOI")
+    run_parser.add_argument("--aoi", required=True, help="AOI name (folder name in tests/golden)")
+    run_parser.add_argument("--artifacts", default="artifacts/acceptance", help="Directory for artifacts")
+
+    run_all_parser = acceptance_subparsers.add_parser("run-all", help="Run acceptance for all AOIs")
+    run_all_parser.add_argument("--golden-dir", default="tests/golden", help="Directory containing golden AOIs")
+    run_all_parser.add_argument("--artifacts", default="artifacts/acceptance", help="Directory for artifacts")
+
     # Placeholder for future commands
     subparsers.add_parser("generate", help="Generate a map (placeholder)")
 
@@ -129,6 +141,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         except Exception as e:
             print(f"Error: {e}")
             return 1
+
+    elif args.command == "acceptance":
+        from pathlib import Path
+        from mapgen.acceptance.run import run_aoi, run_all
+        
+        golden_root = Path("tests/golden")
+        artifacts_root = Path(args.artifacts)
+        
+        if args.acceptance_command == "run":
+            aoi_dir = golden_root / args.aoi
+            if not aoi_dir.exists():
+                print(f"Error: AOI directory {aoi_dir} does not exist.")
+                return 1
+            
+            result = run_aoi(aoi_dir, artifacts_root / args.aoi)
+            return 0 if result["pass"] else 2
+            
+        elif args.acceptance_command == "run-all":
+            results = run_all(Path(args.golden_dir), artifacts_root)
+            all_passed = all(r["pass"] for r in results)
+            return 0 if all_passed else 2
+        else:
+            acceptance_parser.print_help()
+            return 0
 
     return 0
 

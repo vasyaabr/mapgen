@@ -152,5 +152,5 @@ cython_debug/
 .vscode/
 
 # Project specific artifacts
-artifacts/logs/
+artifacts/
 intermediate/
