@@ -4,7 +4,7 @@ trigger: always_on
 
 # Project Mission
 
-Build a deterministic, test-driven Python command-line tool that generates an orienteering map in the .omap format (compatible with OpenOrienteering Mapper) from three data sources: georeferenced raster maps, OpenStreetMap data, and Google aerial imagery (downloaded via an approved provider and used only within licensing constraints).
+Build a deterministic, test-driven Python command-line tool that generates an orienteering map in the .omap format (compatible with OpenOrienteering Mapper) from three data sources: georeferenced raster maps, OpenStreetMap data, and Google aerial imagery.
 
 The tool must be structured as a set of independently runnable pipeline steps (each exposed as its own CLI command) so that every new capability can be executed, tested, and verified in isolation. Each step must produce explicit, reproducible artifacts in a workspace (cached inputs, intermediate products, and the final .omap) and must be covered by automated unit and integration tests.
 

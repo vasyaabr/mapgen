@@ -55,6 +55,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     run_all_parser.add_argument("--golden-dir", default="tests/golden", help="Directory containing golden AOIs")
     run_all_parser.add_argument("--artifacts", default="artifacts/acceptance", help="Directory for artifacts")
 
+    # Raster commands
+    from mapgen.raster import register_raster_commands
+    register_raster_commands(subparsers)
+
     # Placeholder for future commands
     subparsers.add_parser("generate", help="Generate a map (placeholder)")
 
@@ -165,6 +169,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             acceptance_parser.print_help()
             return 0
+
+    elif args.command == "raster":
+        from mapgen.raster import handle_raster_command
+        return handle_raster_command(args)
 
     return 0
 
